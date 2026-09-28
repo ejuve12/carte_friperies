@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Carte des friperies</title>
+  <meta name="description" content="Trouvez les friperies, dépôts-ventes et boutiques solidaires autour de vous." />
+  <meta name="theme-color" content="#b5543c" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Friperies" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside id="sidebar">
+    <header>
+      <h1>🧥 Friperies</h1>
+      <p class="subtitle">Trouvez les friperies, dépôts-ventes et boutiques solidaires autour de vous.</p>
+    </header>
+
+    <form id="search-form" autocomplete="off">
+      <input id="search-input" type="search" placeholder="Ville, adresse…" aria-label="Rechercher un lieu" />
+      <button type="submit">Aller</button>
+    </form>
+
+    <div class="actions">
+      <button id="locate-btn" type="button">📍 Autour de moi</button>
+    </div>
+
+    <fieldset class="filters">
+      <legend>Types de boutiques</legend>
+      <label><input type="checkbox" value="friperie" checked /> <span class="dot friperie"></span> Friperie / dépôt-vente</label>
+      <label><input type="checkbox" value="solidaire" checked /> <span class="dot solidaire"></span> Boutique solidaire</label>
+      <label><input type="checkbox" value="vetements" checked /> <span class="dot vetements"></span> Vêtements d'occasion</label>
+      <label class="fav-only"><input type="checkbox" id="fav-only" /> ⭐ Favoris uniquement</label>
+    </fieldset>
+
+    <input id="list-filter" type="search" placeholder="Filtrer la liste par nom…" aria-label="Filtrer la liste" />
+
+    <p id="status" role="status">Déplacez la carte : les friperies s'affichent automatiquement.</p>
+    <ul id="results"></ul>
+
+    <div id="install-box" hidden>
+      <button id="install-btn" type="button" class="primary">📲 Installer l'application</button>
+      <p id="ios-hint" hidden>Sur iPhone : touchez <strong>Partager</strong> <span aria-hidden="true">⎋</span> puis <strong>« Sur l'écran d'accueil »</strong>.</p>
+    </div>
+
+    <footer>
+      Données © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">contributeurs OpenStreetMap</a>.
+      Une friperie manque ? <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">Ajoutez-la sur OSM</a>.
+    </footer>
+  </aside>
+
+  <main id="map"></main>
+  <div id="loading" role="status">Recherche…</div>
+  <button id="toggle-sidebar" type="button" aria-label="Afficher la liste"><span id="toggle-icon">☰</span> <span id="count"></span></button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

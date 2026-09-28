@@ -1,0 +1,64 @@
+# Met à jour les friperies chaque nuit et publie l'app sur GitHub Pages.
+# Prérequis (une fois) : Settings → Pages → Source : « GitHub Actions ».
+name: Mise à jour et publication
+
+on:
+  schedule:
+    - cron: "17 3 * * *"   # tous les jours à 3h17 UTC (heure creuse pour le serveur Overpass)
+  push:
+    branches: [main]
+  workflow_dispatch:        # bouton « Run workflow » pour lancer à la main
+
+permissions:
+  contents: write           # pour enregistrer le fichier mis à jour dans le dépôt
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Télécharger les friperies depuis OpenStreetMap
+        if: github.event_name != 'push'
+        # Si Overpass est indisponible, on publie quand même avec les données de la veille.
+        continue-on-error: true
+        timeout-minutes: 20
+        run: node tools/update-data.js
+
+      - name: Enregistrer le fichier s'il a changé
+        if: github.event_name != 'push'
+        run: |
+          if git diff --quiet -- data/friperies.json; then
+            echo "Aucun changement dans les données."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/friperies.json
+            git commit -m "Mise à jour des friperies ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+
+      - name: Préparer les fichiers publiés
+        run: |
+          mkdir _site
+          cp -r index.html style.css app.js sw.js manifest.webmanifest icons data _site/
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
